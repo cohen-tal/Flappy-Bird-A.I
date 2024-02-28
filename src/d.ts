@@ -6,20 +6,25 @@ export interface Tile {
   y: number;
 }
 
-export interface IVelocity {
-  x: number;
-  y: number;
-  acc: number;
+export interface Physics {
+  gravity: number;
+  drag: number;
 }
 
 export enum Velocity {
   X = 4,
   Y = -8,
-  ACCELERATION = 0.2,
+  ACCELERATION = 0.3,
 }
 
 export enum GameState {
   INIT,
   RUNNING,
   GAMEOVER,
+}
+
+export enum Direction {
+  LEFT,
+  RIGHT,
+  STILL,
 }
