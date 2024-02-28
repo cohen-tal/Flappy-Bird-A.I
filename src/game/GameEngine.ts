@@ -1,33 +1,64 @@
 import Doodler from "./doodler";
-import { Tile } from "../d";
+import { Tile, Direction } from "../d";
+import { randInt, detectCollision } from "../utils";
+
+const gameScore: HTMLParagraphElement = document.getElementById(
+  "score"
+) as HTMLParagraphElement;
 
 export default class GameEngine {
-  private doodler: Doodler;
-  private tiles: Tile[];
-  private context: CanvasRenderingContext2D;
+  private doodlers: Doodler[] = [];
+  private tiles: Tile[] = [];
+  private gameScore: number = 0;
+  //   private gameState: number;
 
-  constructor(context: CanvasRenderingContext2D) {
-    this.context = context;
-    this.doodler = new Doodler(360, this.context);
-    this.tiles = [];
-  }
-
-  public init() {
-    this.doodler = new Doodler(300, this.context);
-    this.tiles = this.createTiles();
-    // this.tiles.forEach((tile) => {
-    //   tile.image.src = "./assets/tile.png";
-    // });
-  }
-
-  public update() {
-    this.context.clearRect(0, 0, 300, 600);
-    this.doodler.draw();
-    if (this.detectCollision(this.doodler, ...this.tiles)) {
-      this.doodler.jump();
+  constructor(
+    private context: CanvasRenderingContext2D,
+    private isAI: boolean,
+    public keyDown: boolean = false,
+    public playerDir: Direction = Direction.STILL
+  ) {
+    if (!this.isAI) {
+      this.doodlers = [
+        new Doodler(
+          context,
+          [new Image(), new Image()],
+          46,
+          46,
+          context.canvas.width / 2 - 20,
+          context.canvas.height - 80,
+          0,
+          0,
+          context.canvas.height - 80,
+          { gravity: 0.4, drag: 0.3 }
+        ),
+      ];
     }
+    const startTile = {
+      image: new Image(),
+      width: 80,
+      height: 20,
+      x: this.context.canvas.width / 2 - 40,
+      y: this.context.canvas.height - 20,
+    };
+    this.tiles.push(startTile);
+    startTile.image.src = "./assets/tile.png";
+
+    //fill other tiles on screen
+    for (let i = 1; i < 7; i++) {
+      this.tiles.push({
+        image: new Image(),
+        width: 80,
+        height: 20,
+        x: randInt(0, this.context.canvas.width - 80),
+        y: this.tiles[i - 1].y - 75,
+      });
+      this.tiles[i].image.src = "./assets/tile.png";
+    }
+  }
+
+  public draw() {
     this.tiles.forEach((tile) => {
-      console.log(tile.image.src);
       this.context.drawImage(
         tile.image,
         tile.x,
@@ -36,35 +67,78 @@ export default class GameEngine {
         tile.height
       );
     });
-    this.doodler.update();
+    this.doodlers.forEach((doodler) => {
+      doodler.draw();
+    });
   }
 
-  private createTiles(): Tile[] {
-    const tiles: Tile[] = [];
-    for (let i = 0; i < 6; i++) {
-      const randomX = Math.floor(Math.random() * 300);
-      tiles.push({
+  public update() {
+    const doodler = this.doodlers[0];
+    doodler.dy += doodler.physics.gravity;
+    if (doodler.reachedHalfway()) {
+      this.slideTilesDown(doodler.dy);
+      this.newTile();
+      this.gameScore++;
+      gameScore.innerText = `Score: ${this.gameScore.toString()}`;
+    } else {
+      doodler.y += doodler.dy;
+    }
+
+    this.tiles.forEach((tile) => {
+      if (detectCollision(doodler, tile)) {
+        doodler.y = tile.y - doodler.getHeight();
+        doodler.dy = doodler.bounceVelocity;
+      }
+    });
+
+    if (!this.keyDown) {
+      if (this.playerDir === Direction.LEFT) {
+        doodler.dx += doodler.physics.drag;
+        if (doodler.dx > 0) {
+          doodler.dx = 0;
+          this.playerDir = Direction.STILL;
+        }
+      } else if (this.playerDir === Direction.RIGHT) {
+        doodler.dx -= doodler.physics.drag;
+        if (doodler.dx < 0) {
+          doodler.dx = 0;
+          this.playerDir = Direction.STILL;
+        }
+      }
+    }
+    doodler.x += doodler.dx;
+    doodler.update();
+  }
+
+  public updateDoodlersDX(dx: number): void {
+    this.doodlers.forEach((doodler) => {
+      doodler.dx = dx;
+      dx > 0
+        ? (doodler.direction = Direction.RIGHT)
+        : (doodler.direction = Direction.LEFT);
+    });
+  }
+
+  public getGameScore(): string {
+    return this.gameScore.toString();
+  }
+
+  private slideTilesDown(dy: number) {
+    this.tiles.forEach((tile) => (tile.y -= dy));
+  }
+
+  private newTile() {
+    const canvasHeight: number = this.context.canvas.height;
+    if (this.tiles.length > 0 && this.tiles[0].y >= canvasHeight) {
+      this.tiles.push({
         image: new Image(),
         width: 80,
         height: 20,
-        x: randomX,
-        y: this.context.canvas.height - 75 * i - 150,
+        x: randInt(0, this.context.canvas.width - 80),
+        y: -20,
       });
-      tiles[i].image.src = "./assets/tile.png";
+      this.tiles[this.tiles.length - 1].image.src = "./assets/tile.png";
+      this.tiles.shift();
     }
-    return tiles;
-  }
-
-  private detectCollision(doodler: Doodler, ...tiles: Tile[]): boolean {
-    return tiles.some((tile) => {
-      if (
-        doodler.x < tile.x + tile.width &&
-        doodler.x + doodler.width > tile.x &&
-        doodler.y < tile.y + tile.height &&
-        doodler.y + doodler.height > tile.y
-      ) {
-        return true;
-      }
-    });
   }
 }
