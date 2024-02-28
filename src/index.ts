@@ -1,38 +1,53 @@
-import Doodler from "./game/doodler";
+import { Direction } from "./d";
 import GameEngine from "./game/GameEngine";
 import "./styles.css";
 
 const canvas: HTMLCanvasElement = document.getElementById(
   "canvas"
 ) as HTMLCanvasElement;
+const context: CanvasRenderingContext2D = canvas.getContext(
+  "2d"
+) as CanvasRenderingContext2D;
 
-const context: CanvasRenderingContext2D = canvas.getContext("2d")!;
+const gameEngine: GameEngine = new GameEngine(context, false);
 
-const doodler: Doodler = new Doodler(canvas.width, context);
+let leftKeyPressed = false;
+let rightKeyPressed = false;
 
-document.addEventListener("keydown", moveDoodler);
-
-function moveDoodler(event: KeyboardEvent) {
-  if (event.key === "ArrowRight" || event.key === "keyD") {
-    doodler.moveRight();
+document.addEventListener("keydown", (e: KeyboardEvent) => {
+  if (e.key === "ArrowLeft") {
+    leftKeyPressed = true;
+    gameEngine.playerDir = Direction.LEFT;
+  } else if (e.key === "ArrowRight") {
+    rightKeyPressed = true;
+    gameEngine.playerDir = Direction.RIGHT;
   }
-  if (event.key === "ArrowLeft" || event.key === "keyA") {
-    doodler.moveLeft();
+});
+
+document.addEventListener("keyup", (e: KeyboardEvent) => {
+  if (e.key === "ArrowLeft") {
+    leftKeyPressed = false;
+  } else if (e.key === "ArrowRight") {
+    rightKeyPressed = false;
   }
-}
-
-const img = new Image();
-img.src = "./assets/tile.png";
-
-const gameEngine: GameEngine = new GameEngine(context);
-gameEngine.init();
-update();
+});
 
 function update() {
   requestAnimationFrame(update);
   context.clearRect(0, 0, canvas.width, canvas.height);
-  // context.drawImage(img, 0, 0, 80, 20);
+
+  if (leftKeyPressed) {
+    gameEngine.keyDown = true;
+    gameEngine.updateDoodlersDX(-4);
+  } else if (rightKeyPressed) {
+    gameEngine.keyDown = true;
+    gameEngine.updateDoodlersDX(4);
+  } else {
+    gameEngine.keyDown = false;
+  }
+
   gameEngine.update();
-  // doodler.draw();
-  // doodler.update();
+  gameEngine.draw();
 }
+
+update();
