@@ -1,30 +1,16 @@
-export interface Tile {
-  image: HTMLImageElement;
-  width: number;
-  height: number;
+export interface Vector {
   x: number;
   y: number;
 }
 
-export interface Physics {
-  gravity: number;
-  drag: number;
-}
-
 export enum Velocity {
-  X = 4,
-  Y = -8,
-  ACCELERATION = 0.3,
+  X = 2,
+  Y = -5.8,
+  ACCELERATION = 0.33,
 }
 
 export enum GameState {
   INIT,
   RUNNING,
   GAMEOVER,
-}
-
-export enum Direction {
-  LEFT,
-  RIGHT,
-  STILL,
 }
