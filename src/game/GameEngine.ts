@@ -1,144 +1,79 @@
-import Doodler from "./doodler";
-import { Tile, Direction } from "../d";
-import { randInt, detectCollision } from "../utils";
-
-const gameScore: HTMLParagraphElement = document.getElementById(
-  "score"
-) as HTMLParagraphElement;
+import Bird from "./Bird";
+import Pipes from "./Pipes";
+import Ground from "./Ground";
+import { randInt } from "../utils";
 
 export default class GameEngine {
-  private doodlers: Doodler[] = [];
-  private tiles: Tile[] = [];
-  private gameScore: number = 0;
-  //   private gameState: number;
-
+  public keyDown: boolean = false;
   constructor(
     private context: CanvasRenderingContext2D,
-    private isAI: boolean,
-    public keyDown: boolean = false,
-    public playerDir: Direction = Direction.STILL
+    private bird: Bird,
+    private pipes: Pipes[] = [],
+    private ground: Ground = new Ground(context, 0),
+    public gen: number = 1
   ) {
-    if (!this.isAI) {
-      this.doodlers = [
-        new Doodler(
-          context,
-          [new Image(), new Image()],
-          46,
-          46,
-          context.canvas.width / 2 - 20,
-          context.canvas.height - 80,
-          0,
-          0,
-          context.canvas.height - 80,
-          { gravity: 0.4, drag: 0.3 }
-        ),
-      ];
-    }
-    const startTile = {
-      image: new Image(),
-      width: 80,
-      height: 20,
-      x: this.context.canvas.width / 2 - 40,
-      y: this.context.canvas.height - 20,
-    };
-    this.tiles.push(startTile);
-    startTile.image.src = "./assets/tile.png";
+    const firstPipeX: number = Math.floor(this.context.canvas.width * 1.5);
+    const firstPipeY: number = Math.floor(this.context.canvas.height / 2);
+    const firstPipes: Pipes = new Pipes(context, firstPipeX, firstPipeY);
+    pipes.push(firstPipes);
 
-    //fill other tiles on screen
-    for (let i = 1; i < 7; i++) {
-      this.tiles.push({
-        image: new Image(),
-        width: 80,
-        height: 20,
-        x: randInt(0, this.context.canvas.width - 80),
-        y: this.tiles[i - 1].y - 75,
-      });
-      this.tiles[i].image.src = "./assets/tile.png";
+    for (let i = 0; i < 2; i++) {
+      const pipeHeight: number = randInt(80, 380);
+      const pipeX: number = pipes[pipes.length - 1].pipeX + 300;
+      const pipe: Pipes = new Pipes(context, pipeX, pipeHeight);
+      this.pipes.push(pipe);
     }
   }
 
-  public draw() {
-    this.tiles.forEach((tile) => {
-      this.context.drawImage(
-        tile.image,
-        tile.x,
-        tile.y,
-        tile.width,
-        tile.height
-      );
-    });
-    this.doodlers.forEach((doodler) => {
-      doodler.draw();
-    });
-  }
-
-  public update() {
-    const doodler = this.doodlers[0];
-    doodler.dy += doodler.physics.gravity;
-    if (doodler.reachedHalfway()) {
-      this.slideTilesDown(doodler.dy);
-      this.newTile();
-      this.gameScore++;
-      gameScore.innerText = `Score: ${this.gameScore.toString()}`;
-    } else {
-      doodler.y += doodler.dy;
+  public update(): void {
+    if (this.keyDown) {
+      this.bird.flap();
     }
-
-    this.tiles.forEach((tile) => {
-      if (detectCollision(doodler, tile)) {
-        doodler.y = tile.y - doodler.getHeight();
-        doodler.dy = doodler.bounceVelocity;
-      }
-    });
-
-    if (!this.keyDown) {
-      if (this.playerDir === Direction.LEFT) {
-        doodler.dx += doodler.physics.drag;
-        if (doodler.dx > 0) {
-          doodler.dx = 0;
-          this.playerDir = Direction.STILL;
-        }
-      } else if (this.playerDir === Direction.RIGHT) {
-        doodler.dx -= doodler.physics.drag;
-        if (doodler.dx < 0) {
-          doodler.dx = 0;
-          this.playerDir = Direction.STILL;
-        }
+    this.bird.update();
+    if (!this.bird.dead) {
+      this.updatePipes();
+      this.ground.update();
+      if (this.checkCollision(this.bird)) {
+        this.bird.kill();
       }
     }
-    doodler.x += doodler.dx;
-    doodler.update();
   }
 
-  public updateDoodlersDX(dx: number): void {
-    this.doodlers.forEach((doodler) => {
-      doodler.dx = dx;
-      dx > 0
-        ? (doodler.direction = Direction.RIGHT)
-        : (doodler.direction = Direction.LEFT);
+  public draw(): void {
+    this.pipes.forEach((pipe) => {
+      pipe.draw();
     });
+    this.bird.draw();
+    this.ground.draw();
   }
 
-  public getGameScore(): string {
-    return this.gameScore.toString();
-  }
-
-  private slideTilesDown(dy: number) {
-    this.tiles.forEach((tile) => (tile.y -= dy));
-  }
-
-  private newTile() {
-    const canvasHeight: number = this.context.canvas.height;
-    if (this.tiles.length > 0 && this.tiles[0].y >= canvasHeight) {
-      this.tiles.push({
-        image: new Image(),
-        width: 80,
-        height: 20,
-        x: randInt(0, this.context.canvas.width - 80),
-        y: -20,
-      });
-      this.tiles[this.tiles.length - 1].image.src = "./assets/tile.png";
-      this.tiles.shift();
+  private updatePipes(): void {
+    this.pipes.forEach((pipe) => {
+      pipe.update();
+    });
+    if (this.pipes[0].pipeX < -this.pipes[0].width) {
+      this.pipes.shift();
+      this.addPipe();
     }
+  }
+
+  private addPipe(): void {
+    const pipeX: number = this.pipes[this.pipes.length - 1].pipeX + 300;
+    const pipeY: number = randInt(80, 380);
+    const pipe: Pipes = new Pipes(this.context, pipeX, pipeY);
+    this.pipes.push(pipe);
+  }
+
+  private checkCollision(bird: Bird): boolean {
+    const collisionWithPipes: boolean = this.pipes.some((pipe) => {
+      const birdX: number = bird.x - bird.width / 2;
+      const birdY: number = bird.y - bird.height / 2;
+      return pipe.isColliding(birdX, birdY, bird.width, bird.height);
+    });
+    const collisionWithGround: boolean =
+      this.bird.y + this.bird.height >=
+      this.context.canvas.height - this.ground.height + 10;
+
+    return collisionWithPipes || collisionWithGround;
   }
 }
