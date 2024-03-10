@@ -20,8 +20,18 @@ body {
   background-image: url("./assets/background.jpeg");
 }
 
+@font-face {
+  font-family: "FlappyBird";
+  src: url("./assets/04B_19.ttf");
+}
+
 #score {
   position: absolute;
-  top: 10px;
-  left: 37%;
+  align-self: self-start;
+  top: -30px;
+  font-family: "FlappyBird";
+  font-size: 48px;
+  color: white;
+  z-index: 1;
+  text-shadow: 2px 2px 1px black;
 }
