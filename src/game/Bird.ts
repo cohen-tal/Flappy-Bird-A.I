@@ -8,8 +8,9 @@ export default class Bird {
   private rotationDegree: number = 0;
   private timer: Timer = new Timer();
   public dead: boolean = false;
+  public centerPoint: Vector;
   constructor(
-    private context: CanvasRenderingContext2D,
+    public context: CanvasRenderingContext2D,
     public x: number,
     public y: number,
     public images: [HTMLImageElement, HTMLImageElement, HTMLImageElement] = [
@@ -30,6 +31,10 @@ export default class Bird {
       ++this.frame > 2 ? (this.frame = 0) : this.frame;
     }, 100);
     this.timer.start();
+    this.centerPoint = {
+      x: this.x + this.width / 2,
+      y: this.y + this.height / 2,
+    };
   }
 
   public update(): void {
