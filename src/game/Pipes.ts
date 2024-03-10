@@ -1,4 +1,4 @@
-import { Velocity } from "../d";
+import { Vector, Velocity } from "../d";
 import SinglePipe from "./SinglePipe";
 
 export default class Pipes {
@@ -8,8 +8,9 @@ export default class Pipes {
   constructor(
     private context: CanvasRenderingContext2D,
     public pipeX: number,
-    public pipeLength: number,
-    public gap: number = 20
+    public topPipeLength: number,
+    public bottomPipeLength: number = 400,
+    public gap: number = 100
   ) {
     this.topPipe = this.newTopPipe();
     this.bottomPipe = this.newBottomPipe();
@@ -42,8 +43,36 @@ export default class Pipes {
     return topPipe || bottomPipe;
   }
 
+  public getTopPipeCenterCoordinates(): Vector {
+    return {
+      x: this.topPipe.x,
+      y: this.topPipe.y + this.topPipe.length,
+    };
+  }
+
+  public getBottomPipeCenterCoordinates(): Vector {
+    return {
+      x: this.bottomPipe.x,
+      y: this.topPipe.y + this.bottomPipe.length + this.gap,
+    };
+  }
+
+  // public getTopPipeCenterCoordinates(): Vector {
+  //   return {
+  //     x: this.topPipe.x + this.topPipe.width / 2,
+  //     y: this.topPipe.y + this.topPipe.length,
+  //   };
+  // }
+
+  // public getBottomPipeCenterCoordinates(): Vector {
+  //   return {
+  //     x: this.bottomPipe.x + this.bottomPipe.width / 2,
+  //     y: this.topPipe.y + this.bottomPipe.length + this.gap,
+  //   };
+  // }
+
   private newTopPipe(): SinglePipe {
-    const topPipeY: number = 0 - this.pipeLength + this.gap;
+    const topPipeY: number = 0 - this.topPipeLength + this.gap;
     const topPipe: SinglePipe = new SinglePipe(
       this.context,
       this.pipeX,
@@ -55,7 +84,7 @@ export default class Pipes {
 
   private newBottomPipe(): SinglePipe {
     const bottomPipeY: number =
-      this.context.canvas.height - 112 - this.pipeLength;
+      this.topPipe.y + this.bottomPipeLength + this.gap;
     const bottomPipe: SinglePipe = new SinglePipe(
       this.context,
       this.pipeX,
