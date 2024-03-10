@@ -1,109 +1,124 @@
-// import { Direction, Tile } from "../d";
-// import DoodlerAI from "./Doodler-AI";
+import BirdAI from "./BirdAI";
+import Pipes from "./Pipes";
 
-// export default class Population {
-//   public doodlers: DoodlerAI[] = [];
-//   public bestDoodler: DoodlerAI;
-//   public currentBestDoodler: DoodlerAI;
+export default class Population {
+  public birds: BirdAI[] = [];
+  public bestBird: BirdAI;
+  public bestScore: number = 0;
+  public gen: number = 1;
+  public gameScore: number = 0;
+  public pipes: Pipes[] = [];
+  constructor(
+    private context: CanvasRenderingContext2D,
+    private pop: number = 1
+  ) {
+    this.populate();
+    this.bestBird = this.birds[0];
+  }
 
-//   constructor(
-//     private context: CanvasRenderingContext2D,
-//     private numDoodlers: number,
-//     public tiles: Tile[],
-//     public gen: number = 1
-//   ) {
-//     for (let i = 0; i < this.numDoodlers; i++) {
-//       this.doodlers.push(
-//         new DoodlerAI(
-//           context,
-//           [new Image(), new Image()],
-//           46,
-//           46,
-//           context.canvas.width / 2 - 20,
-//           context.canvas.height - 80,
-//           0,
-//           0,
-//           context.canvas.height - 80,
-//           { gravity: 0.33, drag: 0.3 },
-//           -12.5,
-//           Direction.RIGHT,
-//           this.tiles
-//         )
-//       );
-//     }
-//     this.currentBestDoodler = this.doodlers[0];
-//     this.bestDoodler = this.currentBestDoodler;
-//   }
+  public update(pipes: Pipes[]): void {
+    const aliveBirds: BirdAI[] = this.birds.filter((bird) => !bird.dead);
+    if (aliveBirds.length > 0) {
+      aliveBirds.forEach((bird) => {
+        bird.think(pipes);
+        bird.update();
+        if (this.checkCollision(bird, pipes)) {
+          bird.kill();
+        } else {
+          if (bird.passedPipes(pipes[0])) {
+            bird.score++;
+          }
+        }
+        if (bird.score > this.bestScore) {
+          this.bestBird = bird;
+          this.bestScore = bird.score;
+        }
+      });
+    }
+  }
 
-//   public update(): void {
-//     this.doodlers.forEach((doodler) => {
-//       doodler.update();
-//     });
-//   }
+  public draw(): void {
+    this.birds.forEach((bird) => {
+      if (!bird.dead) {
+        bird.draw();
+      }
+    });
+  }
 
-//   public draw(): void {
-//     this.doodlers.forEach((doodler) => {
-//       doodler.draw();
-//     });
-//   }
+  // public nextGeneration(): void {
+  //   this.birds.sort((a, b) => b.fitness - a.fitness);
+  //   const newBirds: BirdAI[] = [];
+  //   for (let i = 0; i < this.birds.length; i++) {
+  //     const parent: BirdAI = this.birds[0];
+  //     const child: BirdAI = new BirdAI(this.context, 180, 280);
+  //     child.brain = parent.brain.clone();
+  //     child.mutate();
+  //     newBirds.push(child);
+  //   }
+  //   this.birds = newBirds;
+  //   this.gen++;
+  // }
 
-//   public isDone(): boolean {
-//     return this.doodlers.every((doodler) => {
-//       return doodler.dead;
-//     });
-//   }
+  public nextGeneration(): void {
+    this.birds.sort((a, b) => b.fitness - a.fitness);
+    const randomBird: BirdAI = this.birds[Math.floor(Math.random() * 3) + 1];
+    const newBirds: BirdAI[] = [];
+    for (let i = 0; i < this.birds.length; i++) {
+      const parentA: BirdAI = this.birds[0];
+      const parentB: BirdAI = randomBird;
+      const child: BirdAI = new BirdAI(this.context, 180, 320);
+      child.brain = parentA.brain.crossover(parentB.brain);
+      child.brain.mutate();
+      newBirds.push(child);
+    }
+    this.birds = newBirds;
+    this.gen++;
+  }
 
-//   public newGeneration(tiles: Tile[]): void {
-//     this.naturalSelection();
-//     this.doodlers.forEach((doodler) => {
-//       doodler.tiles = tiles;
-//       doodler.dead = false;
-//       doodler.y = this.context.canvas.height - 80;
-//       doodler.x = this.context.canvas.width / 2 - 20;
-//       doodler.dx = 0;
-//       doodler.dy = 0;
-//       doodler.fitness = 0;
-//       doodler.score = 0;
-//     });
-//   }
+  // private pickOne(): BirdAI {
+  //   let index: number = 0;
+  //   let sum: number = 0;
+  //   //calculate the sum of all the fitnesses
+  //   this.birds.forEach((bird) => {
+  //     sum += bird.fitness;
+  //   });
+  //   let r: number = Math.random() * sum;
+  //   while (r > 0) {
+  //     r -= this.birds[index].fitness;
+  //     index++;
+  //   }
+  //   index--;
+  //   const bird: BirdAI = this.birds[index];
+  //   const child: BirdAI = new BirdAI(this.context, 180, 280);
+  //   child.brain = bird.brain.clone();
+  //   child.brain.mutate();
+  //   return child;
+  // }
 
-//   public getBestDoodler(): DoodlerAI {
-//     this.currentBestDoodler = this.doodlers.reduce((prev, curr) => {
-//       return prev.score > curr.score ? prev : curr;
-//     });
-//     return this.currentBestDoodler;
-//   }
+  public allDead(): boolean {
+    return this.birds.every((bird) => bird.dead);
+  }
 
-//   public naturalSelection(): void {
-//     this.gen++;
-//     if (this.bestDoodler.score < this.currentBestDoodler.score) {
-//       this.bestDoodler = this.currentBestDoodler;
-//     }
-//     const newDoodlers: DoodlerAI[] = [];
-//     newDoodlers.push(this.bestDoodler.clone());
-//     for (let i = 1; i < this.numDoodlers; i++) {
-//       const parent: DoodlerAI = this.pickParent();
-//       const child: DoodlerAI = parent.clone();
-//       child.mutate();
-//       newDoodlers.push(child);
-//     }
-//     this.doodlers = newDoodlers;
-//   }
+  private updateGameScore(birdScore: number): void {
+    if (birdScore > this.gameScore) {
+      this.gameScore = birdScore;
+    }
+  }
 
-//   private pickParent(): DoodlerAI {
-//     let fitnessSum: number = 0;
-//     this.doodlers.forEach((doodler) => {
-//       fitnessSum += doodler.fitness;
-//     });
-//     const rand: number = Math.random() * fitnessSum;
-//     let parent: DoodlerAI = this.doodlers[0];
-//     for (let i = 0; i < this.doodlers.length; i++) {
-//       if (rand > fitnessSum) {
-//         parent = this.doodlers[i];
-//         break;
-//       }
-//       fitnessSum -= this.doodlers[i].fitness;
-//     }
-//     return parent;
-//   }
-// }
+  private checkCollision(bird: BirdAI, pipes: Pipes[]): boolean {
+    return pipes.some((pipe) => {
+      const birdX: number = bird.x - bird.width / 2;
+      const birdY: number = bird.y - bird.height / 2;
+      return (
+        pipe.isColliding(birdX, birdY, bird.width, bird.height) ||
+        bird.y > this.context.canvas.height - 112 - bird.height
+      );
+    });
+  }
+
+  private populate(): void {
+    for (let i = 0; i < this.pop; i++) {
+      this.birds.push(new BirdAI(this.context, 180, 320));
+    }
+  }
+}
