@@ -4,9 +4,9 @@ export interface Vector {
 }
 
 export enum Velocity {
-  X = 2,
-  Y = -5.8,
-  ACCELERATION = 0.33,
+  X = 4,
+  Y = -5,
+  ACCELERATION = 0.35,
 }
 
 export enum GameState {
