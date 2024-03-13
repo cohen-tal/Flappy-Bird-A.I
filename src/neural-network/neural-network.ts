@@ -19,7 +19,7 @@ export default class NeuralNetwork {
   }
 
   public predict(input: number[]): number[] {
-    input.push(Math.random() * 2 - 1);
+    input.push(this.bias);
     // Perform feedforward calculations
     const hiddenLayerOutput: number[] = this.feedforward(
       input,
