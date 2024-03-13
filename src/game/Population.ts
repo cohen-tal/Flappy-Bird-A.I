@@ -5,12 +5,14 @@ export default class Population {
   public birds: BirdAI[] = [];
   public bestBird: BirdAI;
   public bestScore: number = 0;
-  public gen: number = 1;
   public gameScore: number = 0;
   public pipes: Pipes[] = [];
+  public extinctPopulation: boolean = false;
+  public extinctionCount: number = 0;
   constructor(
     private context: CanvasRenderingContext2D,
-    private pop: number = 1
+    private pop: number = 1,
+    public gen: number = 1
   ) {
     this.populate();
     this.bestBird = this.birds[0];
@@ -60,6 +62,13 @@ export default class Population {
   // }
 
   public nextGeneration(): void {
+    if (this.extinctPopulation) {
+      this.birds = [];
+      this.populate();
+      this.gen = 1;
+      this.extinctPopulation = false;
+      return;
+    }
     this.birds.sort((a, b) => b.fitness - a.fitness);
     const randomBird: BirdAI = this.birds[Math.floor(Math.random() * 3) + 1];
     const newBirds: BirdAI[] = [];
@@ -73,6 +82,11 @@ export default class Population {
     }
     this.birds = newBirds;
     this.gen++;
+  }
+
+  public extinct(): void {
+    this.extinctPopulation = true;
+    this.extinctionCount++;
   }
 
   // private pickOne(): BirdAI {
@@ -111,7 +125,7 @@ export default class Population {
       const birdY: number = bird.y - bird.height / 2;
       return (
         pipe.isColliding(birdX, birdY, bird.width, bird.height) ||
-        bird.y > this.context.canvas.height - 112 - bird.height
+        bird.y > this.context.canvas.height - 72 - bird.height
       );
     });
   }

@@ -8,8 +8,7 @@ import BirdAI from "./BirdAI";
 export default class GameEngineAI {
   public gameScore: number = 0;
   public bestScore: number = 0;
-  public gen: number = 1;
-  public pop: number = 1;
+  public extinctionCount: number = 0;
   private canUpdateScore: boolean = true;
   private population: Population;
   constructor(
@@ -17,7 +16,7 @@ export default class GameEngineAI {
     private pipes: Pipes[] = [],
     private ground: Ground = new Ground(context, 0)
   ) {
-    this.population = new Population(context, 100);
+    this.population = new Population(context, 500);
     this.generatePipes();
   }
 
@@ -27,6 +26,10 @@ export default class GameEngineAI {
     this.ground.update();
     this.updateGameScore();
     if (this.population.allDead()) {
+      // check if we need to extinct the population and create a new one
+      if (this.gameScore === 0 && this.population.gen > 5) {
+        this.population.extinct();
+      }
       this.population.nextGeneration();
       this.pipes = [];
       this.gameScore = 0;
@@ -43,9 +46,29 @@ export default class GameEngineAI {
     this.ground.draw();
   }
 
+  public getScore(): string {
+    return this.gameScore.toString();
+  }
+
+  public getBestScore(): string {
+    return this.bestScore.toString();
+  }
+
+  public getPopulation(): string {
+    return this.population.birds.filter((bird) => !bird.dead).length.toString();
+  }
+
+  public getGeneration(): string {
+    return this.population.gen.toString();
+  }
+
+  public getExtinctionCount(): string {
+    return this.population.extinctionCount.toString();
+  }
+
   private generatePipes(): void {
     const firstPipeX: number = Math.floor(this.context.canvas.width * 1.2);
-    const firstPipeY: number = Math.floor(this.context.canvas.height / 2);
+    const firstPipeY: number = Math.floor(this.context.canvas.height / 3);
     const firstPipes: Pipes = new Pipes(this.context, firstPipeX, firstPipeY);
     this.pipes.push(firstPipes);
 
@@ -94,31 +117,6 @@ export default class GameEngineAI {
       this.bestScore = this.gameScore;
     }
   }
-
-  // private checkCollision(bird: Bird): boolean {
-  //   const collisionWithPipes: boolean = this.pipes.some((pipe) => {
-  //     const birdX: number = bird.x - bird.width / 2;
-  //     const birdY: number = bird.y - bird.height / 2;
-  //     return pipe.isColliding(birdX, birdY, bird.width, bird.height);
-  //   });
-  //   const collisionWithGround: boolean =
-  //     this.bird.y + this.bird.height >=
-  //     this.context.canvas.height - this.ground.height + 10;
-
-  //   return collisionWithPipes || collisionWithGround;
-  // }
-
-  // private updateGameScore(): void {
-  //   const closestPipe: Pipes = this.pipes[0];
-  //   if (this.bird.x > closestPipe.pipeX + closestPipe.width) {
-  //     this.gameScore++;
-  //     this.canUpdateScore = false;
-  //   }
-
-  //   if (this.gameScore > this.bestScore) {
-  //     this.bestScore = this.gameScore;
-  //   }
-  // }
 
   private drawLinesFromBirdToPipes(bird: BirdAI): void {
     const pipe: Pipes = this.pipes[0];

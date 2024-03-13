@@ -5,24 +5,19 @@ import { randInt } from "../utils";
 
 export default class GameEngine {
   public keyDown: boolean = false;
+  public gameScore: number = 0;
+  public bestScore: number = 0;
+  public gen: number = 1;
+  public pop: number = 1;
+  private canUpdateScore: boolean = true;
   constructor(
     private context: CanvasRenderingContext2D,
-    private bird: Bird,
+    private gameOver: () => void,
+    public bird: Bird = new Bird(context, 100, 100),
     private pipes: Pipes[] = [],
-    private ground: Ground = new Ground(context, 0),
-    public gen: number = 1
+    private ground: Ground = new Ground(context, 0)
   ) {
-    const firstPipeX: number = Math.floor(this.context.canvas.width * 1.5);
-    const firstPipeY: number = Math.floor(this.context.canvas.height / 2);
-    const firstPipes: Pipes = new Pipes(context, firstPipeX, firstPipeY);
-    pipes.push(firstPipes);
-
-    for (let i = 0; i < 2; i++) {
-      const pipeHeight: number = randInt(80, 380);
-      const pipeX: number = pipes[pipes.length - 1].pipeX + 300;
-      const pipe: Pipes = new Pipes(context, pipeX, pipeHeight);
-      this.pipes.push(pipe);
-    }
+    this.generatePipes();
   }
 
   public update(): void {
@@ -35,7 +30,11 @@ export default class GameEngine {
       this.ground.update();
       if (this.checkCollision(this.bird)) {
         this.bird.kill();
+        this.gameOver();
       }
+    }
+    if (this.canUpdateScore) {
+      this.updateGameScore();
     }
   }
 
@@ -47,6 +46,20 @@ export default class GameEngine {
     this.ground.draw();
   }
 
+  private generatePipes(): void {
+    const firstPipeX: number = Math.floor(this.context.canvas.width * 1.5);
+    const firstPipeY: number = Math.floor(this.context.canvas.height / 3);
+    const firstPipes: Pipes = new Pipes(this.context, firstPipeX, firstPipeY);
+    this.pipes.push(firstPipes);
+
+    for (let i = 0; i < 2; i++) {
+      const pipeHeight: number = randInt(100, 340);
+      const pipeX: number = this.pipes[this.pipes.length - 1].pipeX + 300;
+      const pipe: Pipes = new Pipes(this.context, pipeX, pipeHeight);
+      this.pipes.push(pipe);
+    }
+  }
+
   private updatePipes(): void {
     this.pipes.forEach((pipe) => {
       pipe.update();
@@ -54,12 +67,13 @@ export default class GameEngine {
     if (this.pipes[0].pipeX < -this.pipes[0].width) {
       this.pipes.shift();
       this.addPipe();
+      this.canUpdateScore = true;
     }
   }
 
   private addPipe(): void {
     const pipeX: number = this.pipes[this.pipes.length - 1].pipeX + 300;
-    const pipeY: number = randInt(80, 380);
+    const pipeY: number = randInt(100, 340);
     const pipe: Pipes = new Pipes(this.context, pipeX, pipeY);
     this.pipes.push(pipe);
   }
@@ -75,5 +89,17 @@ export default class GameEngine {
       this.context.canvas.height - this.ground.height + 10;
 
     return collisionWithPipes || collisionWithGround;
+  }
+
+  private updateGameScore(): void {
+    const closestPipe: Pipes = this.pipes[0];
+    if (this.bird.x > closestPipe.pipeX + closestPipe.width) {
+      this.gameScore++;
+      this.canUpdateScore = false;
+    }
+
+    if (this.gameScore > this.bestScore) {
+      this.bestScore = this.gameScore;
+    }
   }
 }

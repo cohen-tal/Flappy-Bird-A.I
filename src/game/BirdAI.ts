@@ -1,5 +1,5 @@
 import { Vector, Velocity } from "../d";
-import NeuralNetwork from "../neural-network/nn";
+import NeuralNetwork from "../neural-network/neural-network";
 import { verticalDistance } from "../utils";
 import Bird from "./Bird";
 import Pipes from "./Pipes";
@@ -63,32 +63,12 @@ export default class BirdAI extends Bird {
       y: closestPipes.getTopPipeCenterCoordinates().y + closestPipes.gap / 2,
     };
 
-    this.context.beginPath();
-    this.context.moveTo(centerPoint.x, centerPoint.y);
-    this.context.lineTo(
-      closestPipes.getTopPipeCenterCoordinates().x + closestPipes.width / 2,
-      closestPipes.getTopPipeCenterCoordinates().y + closestPipes.gap / 2
-    );
-    this.context.strokeStyle = "green";
-    this.context.stroke();
-    this.context.closePath();
-    this.context.beginPath();
-    this.context.moveTo(centerPoint.x, centerPoint.y);
-    this.context.lineTo(centerPoint.x, topPipeCenter.y);
-    this.context.strokeStyle = "red";
-    this.context.stroke();
-    this.context.closePath();
-    this.context.beginPath();
-    this.context.moveTo(centerPoint.x, centerPoint.y);
-    this.context.lineTo(centerPoint.x, bottomPipeCenter.y);
-    this.context.strokeStyle = "blue";
-    this.context.stroke();
-    this.context.closePath();
+    //this.drawVectors(centerPoint, closestPipes);
 
     const inputs: number[] = [
-      verticalDistance(centerPoint, centerGap) / 500,
-      verticalDistance(topVec, centerPoint) / 500,
-      verticalDistance(bottomVec, centerPoint) / 500,
+      verticalDistance(centerPoint, centerGap),
+      verticalDistance(topVec, centerPoint),
+      verticalDistance(bottomVec, centerPoint),
     ];
 
     const output: number[] = this.brain.predict(inputs);
@@ -108,5 +88,44 @@ export default class BirdAI extends Bird {
 
   public passedPipes(pipes: Pipes): boolean {
     return this.x > pipes.pipeX + pipes.width;
+  }
+
+  private drawVectors(centerPoint: Vector, closestPipes: Pipes): void {
+    this.context.beginPath();
+    this.context.moveTo(centerPoint.x, centerPoint.y);
+    this.context.lineTo(
+      closestPipes.getTopPipeCenterCoordinates().x,
+      closestPipes.getTopPipeCenterCoordinates().y
+    );
+    this.context.strokeStyle = "green";
+    this.context.stroke();
+    this.context.closePath();
+    this.context.beginPath();
+    this.context.moveTo(centerPoint.x, centerPoint.y);
+    this.context.lineTo(
+      closestPipes.getBottomPipeCenterCoordinates().x,
+      closestPipes.getBottomPipeCenterCoordinates().y
+    );
+    this.context.strokeStyle = "green";
+    this.context.stroke();
+    this.context.closePath();
+    this.context.beginPath();
+    this.context.moveTo(centerPoint.x, centerPoint.y);
+    this.context.lineTo(
+      centerPoint.x,
+      closestPipes.getTopPipeCenterCoordinates().y
+    );
+    this.context.strokeStyle = "red";
+    this.context.stroke();
+    this.context.closePath();
+    this.context.beginPath();
+    this.context.moveTo(centerPoint.x, centerPoint.y);
+    this.context.lineTo(
+      centerPoint.x,
+      closestPipes.getBottomPipeCenterCoordinates().y
+    );
+    this.context.strokeStyle = "blue";
+    this.context.stroke();
+    this.context.closePath();
   }
 }

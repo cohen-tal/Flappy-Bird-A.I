@@ -40,7 +40,7 @@ export default class Bird {
   public update(): void {
     this.y += this.velocity.y;
     this.velocity.y += this.gravity;
-    const maxY: number = this.context.canvas.height - 102 - this.height;
+    const maxY: number = this.context.canvas.height - 62 - this.height;
     const minY: number = this.height;
     this.y = clamp(this.y, minY, maxY);
   }
@@ -57,7 +57,7 @@ export default class Bird {
   public kill(): void {
     this.timer.stop();
     this.dead = true;
-    this.gravity = Velocity.ACCELERATION * 2;
+    this.gravity = Velocity.ACCELERATION;
     this.rotationDegree = 90;
   }
 
@@ -77,7 +77,7 @@ export default class Bird {
 
   private setRotation(): void {
     if (this.velocity.y >= 0) {
-      this.rotationDegree = Math.min(90, this.rotationDegree + 2);
+      this.rotationDegree = Math.min(90, this.rotationDegree + 1);
       this.frame = 1;
     } else {
       this.rotationDegree = Math.max(-12, this.rotationDegree - 12);

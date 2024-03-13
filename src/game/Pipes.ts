@@ -10,7 +10,7 @@ export default class Pipes {
     public pipeX: number,
     public topPipeLength: number,
     public bottomPipeLength: number = 400,
-    public gap: number = 100
+    public gap: number = 110
   ) {
     this.topPipe = this.newTopPipe();
     this.bottomPipe = this.newBottomPipe();
@@ -72,7 +72,7 @@ export default class Pipes {
   // }
 
   private newTopPipe(): SinglePipe {
-    const topPipeY: number = 0 - this.topPipeLength + this.gap;
+    const topPipeY: number = 0 - this.topPipeLength;
     const topPipe: SinglePipe = new SinglePipe(
       this.context,
       this.pipeX,

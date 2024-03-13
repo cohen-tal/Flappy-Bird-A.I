@@ -7,7 +7,7 @@ export default class Ground {
     public x: number,
     public y: number = 0,
     public width: number = 360,
-    public height: number = 112
+    public height: number = 72
   ) {
     this.groundImage.src = "./assets/ground.jpeg";
   }
