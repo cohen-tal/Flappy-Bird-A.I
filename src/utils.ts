@@ -17,7 +17,6 @@ export function mutateVector(
   return vector.map((value) => {
     if (Math.random() < mutationRate) {
       return value + (Math.random() * 2 - 1) / 5;
-      //return Math.random() * 2 - 1;
     } else {
       return value;
     }
@@ -49,4 +48,20 @@ export function VectorDistance(a: Vector, b: Vector): number {
 export function verticalDistance(a: Vector, b: Vector): number {
   const verticalDistance: number = a.y - b.y;
   return Math.max(verticalDistance, 1);
+}
+
+export function hideElements(
+  elements: HTMLCollectionOf<Element> | HTMLElement[]
+): void {
+  for (let i = 0; i < elements.length; i++) {
+    elements[i].classList.add("hidden");
+  }
+}
+
+export function showElements(
+  elements: HTMLCollectionOf<Element> | HTMLElement[]
+): void {
+  for (let i = 0; i < elements.length; i++) {
+    elements[i].classList.remove("hidden");
+  }
 }
