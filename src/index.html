@@ -6,8 +6,38 @@
     <title>Flappy Bird AI</title>
   </head>
   <body>
-    <p id="score">0</p>
-    <canvas id="canvas" width="360" height="640"></canvas>
-    <!-- <script src="../dist/index.js" type="module"></script> -->
+    <nav class="navbar">
+      <p>Flappy Bird AI</p>
+      <div id="buttons-container">
+        <button id="button" value="AI">Play Yourself</button>
+      </div>
+    </nav>
+    <div id="game-container">
+      <div id="ai-stats-top">
+        <div id="gen-container" class="flex-container">
+          <span>Gen: </span>
+          <p id="generation">0</p>
+        </div>
+        <p id="score">0</p>
+        <div id="alive-container" class="flex-container">
+          <span>Alive: </span>
+          <p id="alive">0</p>
+        </div>
+      </div>
+      <div id="tap-to-start">
+        <img src="./assets/tap-start.png"></img>
+      </div>
+      <canvas id="canvas" width="420" height="640"></canvas>
+      <div id="ai-stats-bottom">
+        <div class="flex-container">
+          <span>Best Score: </span>
+          <p id="best-score">0</p>
+        </div>
+        <div class="flex-container">
+          <span>Extinct: </span>
+          <p id="extinct">0</p>
+        </div>
+      </div>
+    </div>
   </body>
 </html>
