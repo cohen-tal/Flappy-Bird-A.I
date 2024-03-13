@@ -4,13 +4,18 @@ export interface Vector {
 }
 
 export enum Velocity {
-  X = 4,
-  Y = -5,
-  ACCELERATION = 0.35,
+  X = 2,
+  Y = -3.6,
+  ACCELERATION = 0.125,
 }
 
 export enum GameState {
   INIT,
-  RUNNING,
+  PLAY,
   GAMEOVER,
+}
+
+export enum PlayerType {
+  HUMAN = "Human",
+  AI = "AI",
 }
