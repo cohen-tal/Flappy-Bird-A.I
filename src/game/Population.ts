@@ -32,7 +32,6 @@ export default class Population {
           }
         }
         if (bird.score > this.bestScore) {
-          this.bestBird = bird;
           this.bestScore = bird.score;
         }
       });
@@ -47,19 +46,13 @@ export default class Population {
     });
   }
 
-  // public nextGeneration(): void {
-  //   this.birds.sort((a, b) => b.fitness - a.fitness);
-  //   const newBirds: BirdAI[] = [];
-  //   for (let i = 0; i < this.birds.length; i++) {
-  //     const parent: BirdAI = this.birds[0];
-  //     const child: BirdAI = new BirdAI(this.context, 180, 280);
-  //     child.brain = parent.brain.clone();
-  //     child.mutate();
-  //     newBirds.push(child);
-  //   }
-  //   this.birds = newBirds;
-  //   this.gen++;
-  // }
+  public drawVectors(pipes: Pipes[]): void {
+    this.birds.forEach((bird) => {
+      if (!bird.dead) {
+        bird.drawVectors(pipes);
+      }
+    });
+  }
 
   public nextGeneration(): void {
     if (this.extinctPopulation) {
@@ -71,15 +64,27 @@ export default class Population {
     }
     this.birds.sort((a, b) => b.fitness - a.fitness);
     const randomBird: BirdAI = this.birds[Math.floor(Math.random() * 3) + 1];
-    const newBirds: BirdAI[] = [];
-    for (let i = 0; i < this.birds.length; i++) {
-      const parentA: BirdAI = this.birds[0];
-      const parentB: BirdAI = randomBird;
+    const bestBird: BirdAI =
+      this.bestBird.fitness > this.birds[0].fitness
+        ? this.bestBird
+        : this.birds[0];
+    const bestBird2: BirdAI = new BirdAI(this.context, 180, 320);
+    bestBird2.brain = bestBird.brain.clone();
+    bestBird2.mutate();
+    const newBirds: BirdAI[] = [bestBird2];
+    for (let i = 1; i < this.birds.length / 2; i++) {
+      const parentA: BirdAI = bestBird;
+      const parentB: BirdAI = this.pickOne();
       const child: BirdAI = new BirdAI(this.context, 180, 320);
+      const child2: BirdAI = new BirdAI(this.context, 180, 320);
       child.brain = parentA.brain.crossover(parentB.brain);
+      child2.brain = parentB.brain.crossover(randomBird.brain);
       child.brain.mutate();
+      child2.brain.mutate();
       newBirds.push(child);
+      newBirds.push(child2);
     }
+    this.bestBird = bestBird;
     this.birds = newBirds;
     this.gen++;
   }
@@ -89,25 +94,25 @@ export default class Population {
     this.extinctionCount++;
   }
 
-  // private pickOne(): BirdAI {
-  //   let index: number = 0;
-  //   let sum: number = 0;
-  //   //calculate the sum of all the fitnesses
-  //   this.birds.forEach((bird) => {
-  //     sum += bird.fitness;
-  //   });
-  //   let r: number = Math.random() * sum;
-  //   while (r > 0) {
-  //     r -= this.birds[index].fitness;
-  //     index++;
-  //   }
-  //   index--;
-  //   const bird: BirdAI = this.birds[index];
-  //   const child: BirdAI = new BirdAI(this.context, 180, 280);
-  //   child.brain = bird.brain.clone();
-  //   child.brain.mutate();
-  //   return child;
-  // }
+  private pickOne(): BirdAI {
+    let index: number = 0;
+    let sum: number = 0;
+    //calculate the sum of all the fitnesses
+    this.birds.forEach((bird) => {
+      sum += bird.fitness;
+    });
+    let r: number = Math.random() * sum;
+    while (r > 0) {
+      r -= this.birds[index].fitness;
+      index++;
+    }
+    index--;
+    const bird: BirdAI = this.birds[index];
+    const child: BirdAI = new BirdAI(this.context, 180, 280);
+    child.brain = bird.brain.clone();
+    child.brain.mutate();
+    return child;
+  }
 
   public allDead(): boolean {
     return this.birds.every((bird) => bird.dead);
