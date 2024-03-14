@@ -178,7 +178,7 @@ p {
 
 @font-face {
   font-family: "FlappyBird";
-  src: url("./assets/04B_19.ttf");
+  src: url("./assets/flappy-font.TTF");
 }
 
 #score {
