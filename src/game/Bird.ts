@@ -57,7 +57,7 @@ export default class Bird {
   public kill(): void {
     this.timer.stop();
     this.dead = true;
-    this.gravity = Velocity.ACCELERATION;
+    this.gravity = Velocity.ACCELERATION * 2;
     this.rotationDegree = 90;
   }
 
