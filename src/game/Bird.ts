@@ -27,10 +27,10 @@ export default class Bird {
     images[0].src = "./assets/bird1.png";
     images[1].src = "./assets/bird2.png";
     images[2].src = "./assets/bird3.png";
-    this.timer.onTick(() => {
-      ++this.frame > 2 ? (this.frame = 0) : this.frame;
-    }, 100);
-    this.timer.start();
+    // this.timer.onTick(() => {
+    //   ++this.frame > 2 ? (this.frame = 0) : this.frame;
+    // }, 100);
+    // this.timer.start();
     this.centerPoint = {
       x: this.x + this.width / 2,
       y: this.y + this.height / 2,
@@ -52,6 +52,10 @@ export default class Bird {
 
   public flap(): void {
     this.velocity.y = Velocity.Y;
+    this.frame++;
+    if (this.frame > 2) {
+      this.frame = 0;
+    }
   }
 
   public kill(): void {
