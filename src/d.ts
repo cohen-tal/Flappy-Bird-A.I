@@ -5,7 +5,7 @@ export interface Vector {
 
 export enum Velocity {
   X = 2,
-  Y = -3.6,
+  Y = -3.1,
   ACCELERATION = 0.125,
 }
 
