@@ -6,38 +6,51 @@
     <title>Flappy Bird AI</title>
   </head>
   <body>
-    <nav class="navbar">
-      <p>Flappy Bird AI</p>
-      <div id="buttons-container">
-        <button id="button" value="AI">Play Yourself</button>
-      </div>
-    </nav>
+    <div class="navbar">
+      <p>Flappy Bird A.I</p>
+      <button id="button" value="AI">Play Yourself</button>
+      <div class="flex-container">
+      <img src="./assets/github-mark.png" alt="git-icon" width="36" height="36"></img>
+      <img src="./assets/linkedin.png" alt="git-icon" width="33" height="33"></img>
+    </div>
+    </div>
     <div id="game-container">
       <div id="ai-stats-top">
-        <div id="gen-container" class="flex-container">
-          <span>Gen: </span>
-          <p id="generation">0</p>
-        </div>
         <p id="score">0</p>
-        <div id="alive-container" class="flex-container">
-          <span>Alive: </span>
-          <p id="alive">0</p>
-        </div>
       </div>
       <div id="tap-to-start">
-        <img src="./assets/tap-start.png"></img>
+        <img src="./assets/tap-start.png" alt="start-button" ></img>
       </div>
       <canvas id="canvas" width="420" height="640"></canvas>
-      <div id="ai-stats-bottom">
-        <div class="flex-container">
-          <span>Best Score: </span>
-          <p id="best-score">0</p>
-        </div>
-        <div class="flex-container">
-          <span>Extinct: </span>
-          <p id="extinct">0</p>
-        </div>
+    </div>
+    <div id="ai-stats-bottom">
+      <div id="gen-container" class="flex-container">
+        <span>Gen: </span>
+        <p id="generation">0</p>
       </div>
+      <div id="alive-container" class="flex-container">
+        <span>Alive: </span>
+        <p id="alive">0</p>
+      </div>
+      <div class="flex-container">
+        <span>Best Score: </span>
+        <p id="best-score">0</p>
+      </div>
+      <div class="flex-container">
+        <span>Extinct: </span>
+        <p id="extinct">0</p>
+      </div>
+      <div class="flex-container"">
+      <div class="custom-checkbox">
+        <input type="checkbox" id="checkbox" class="custom-checkbox" />
+        <div class="checkmark"></div>
+      </div>
+      <label for="checkbox">See Vectors</label>
+    </div>
+    <div class="flex-container-col">
+      <label for="speed">Game Speed</label>
+    <input type="range" id="speed" name="speed" min="1" max="50" value="1" style="accent-color: #4dc0ca;" />
+  </div>
     </div>
   </body>
 </html>
