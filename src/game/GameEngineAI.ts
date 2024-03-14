@@ -9,6 +9,7 @@ export default class GameEngineAI {
   public gameScore: number = 0;
   public bestScore: number = 0;
   public extinctionCount: number = 0;
+  public showVectors: boolean = false;
   private canUpdateScore: boolean = true;
   private population: Population;
   constructor(
@@ -43,6 +44,9 @@ export default class GameEngineAI {
       pipe.draw();
     });
     this.population.draw();
+    if (this.showVectors) {
+      this.population.drawVectors(this.pipes);
+    }
     this.ground.draw();
   }
 
@@ -67,13 +71,13 @@ export default class GameEngineAI {
   }
 
   private generatePipes(): void {
-    const firstPipeX: number = Math.floor(this.context.canvas.width * 1.2);
+    const firstPipeX: number = Math.floor(this.context.canvas.width * 1);
     const firstPipeY: number = Math.floor(this.context.canvas.height / 3);
     const firstPipes: Pipes = new Pipes(this.context, firstPipeX, firstPipeY);
     this.pipes.push(firstPipes);
 
     for (let i = 0; i < 2; i++) {
-      const pipeHeight: number = randInt(100, 340);
+      const pipeHeight: number = randInt(110, 350);
       const pipeX: number = this.pipes[this.pipes.length - 1].pipeX + 300;
       const pipe: Pipes = new Pipes(this.context, pipeX, pipeHeight);
       this.pipes.push(pipe);
@@ -93,7 +97,7 @@ export default class GameEngineAI {
 
   private addPipe(): void {
     const pipeX: number = this.pipes[this.pipes.length - 1].pipeX + 300;
-    const pipeY: number = randInt(100, 360);
+    const pipeY: number = randInt(110, 350);
     const pipe: Pipes = new Pipes(this.context, pipeX, pipeY);
     this.pipes.push(pipe);
   }
