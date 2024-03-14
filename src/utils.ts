@@ -65,3 +65,22 @@ export function showElements(
     elements[i].classList.remove("hidden");
   }
 }
+
+export function calculateFPS(): Promise<number> {
+  return new Promise((resolve) => {
+    let fps: number = 0;
+    let requestId: number;
+    const lastCalledTime: number = performance.now();
+    function countFrames() {
+      fps++;
+      if (performance.now() - lastCalledTime > 1000) {
+        resolve(fps);
+        fps = 0;
+        cancelAnimationFrame(requestId);
+      } else {
+        requestId = requestAnimationFrame(countFrames);
+      }
+    }
+    requestId = requestAnimationFrame(countFrames);
+  });
+}
