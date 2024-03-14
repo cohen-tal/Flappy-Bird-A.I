@@ -130,7 +130,7 @@ function runGame(fps: number): void {
   // update the game rendering based on the fps value,
   // if the fps is between 30 and 60, the game rendering speed will be twice as fast
   // this is to ensure that the game runs at the same speed on different devices
-  const updateRate: number = fps > 75 ? 1 : 2;
+  const updateRate: number = fps > 75 ? 1 : 1;
 
   // console.log(updateRate);
 
