@@ -50,6 +50,10 @@ p {
   justify-content: center;
   gap: 0.5rem;
   padding: 0.5rem;
+
+  &.icons-container {
+    gap: 2rem;
+  }
 }
 
 .flex-container-col {
