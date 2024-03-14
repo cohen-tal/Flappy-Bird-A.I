@@ -44,13 +44,11 @@ export default class BirdAI extends Bird {
   }
 
   public think(pipes: Pipes[]): void {
-    let closestPipes: Pipes = pipes[0];
-    if (this.passedPipes(closestPipes)) {
-      closestPipes = pipes[1];
-    }
+    const closestPipes: Pipes = this.closestPipes(pipes);
     const topPipeCenter: Vector = closestPipes.getTopPipeCenterCoordinates();
     const bottomPipeCenter: Vector =
       closestPipes.getBottomPipeCenterCoordinates();
+
     const centerPoint: Vector = {
       x: this.x + this.width / 2,
       y: this.y + this.height / 2,
@@ -62,8 +60,6 @@ export default class BirdAI extends Bird {
       x: closestPipes.getTopPipeCenterCoordinates().x + closestPipes.width / 2,
       y: closestPipes.getTopPipeCenterCoordinates().y + closestPipes.gap / 2,
     };
-
-    //this.drawVectors(centerPoint, closestPipes);
 
     const inputs: number[] = [
       verticalDistance(centerPoint, centerGap),
@@ -87,15 +83,22 @@ export default class BirdAI extends Bird {
   }
 
   public passedPipes(pipes: Pipes): boolean {
-    return this.x > pipes.pipeX + pipes.width;
+    return this.x > pipes.pipeX + pipes.width + 2;
   }
 
-  private drawVectors(centerPoint: Vector, closestPipes: Pipes): void {
+  public drawVectors(
+    pipes: Pipes[],
+    centerPoint: Vector = {
+      x: this.x + this.width / 2,
+      y: this.y + this.height / 2,
+    }
+  ): void {
+    const nearest: Pipes = this.closestPipes(pipes);
     this.context.beginPath();
     this.context.moveTo(centerPoint.x, centerPoint.y);
     this.context.lineTo(
-      closestPipes.getTopPipeCenterCoordinates().x,
-      closestPipes.getTopPipeCenterCoordinates().y
+      nearest.getTopPipeCenterCoordinates().x,
+      nearest.getTopPipeCenterCoordinates().y
     );
     this.context.strokeStyle = "green";
     this.context.stroke();
@@ -103,18 +106,15 @@ export default class BirdAI extends Bird {
     this.context.beginPath();
     this.context.moveTo(centerPoint.x, centerPoint.y);
     this.context.lineTo(
-      closestPipes.getBottomPipeCenterCoordinates().x,
-      closestPipes.getBottomPipeCenterCoordinates().y
+      nearest.getBottomPipeCenterCoordinates().x,
+      nearest.getBottomPipeCenterCoordinates().y
     );
     this.context.strokeStyle = "green";
     this.context.stroke();
     this.context.closePath();
     this.context.beginPath();
     this.context.moveTo(centerPoint.x, centerPoint.y);
-    this.context.lineTo(
-      centerPoint.x,
-      closestPipes.getTopPipeCenterCoordinates().y
-    );
+    this.context.lineTo(centerPoint.x, nearest.getTopPipeCenterCoordinates().y);
     this.context.strokeStyle = "red";
     this.context.stroke();
     this.context.closePath();
@@ -122,10 +122,14 @@ export default class BirdAI extends Bird {
     this.context.moveTo(centerPoint.x, centerPoint.y);
     this.context.lineTo(
       centerPoint.x,
-      closestPipes.getBottomPipeCenterCoordinates().y
+      nearest.getBottomPipeCenterCoordinates().y
     );
     this.context.strokeStyle = "blue";
     this.context.stroke();
     this.context.closePath();
+  }
+
+  private closestPipes(pipes: Pipes[]): Pipes {
+    return this.passedPipes(pipes[0]) ? pipes[1] : pipes[0];
   }
 }
