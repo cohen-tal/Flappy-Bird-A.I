@@ -10,7 +10,7 @@ export default class Pipes {
     public pipeX: number,
     public topPipeLength: number,
     public bottomPipeLength: number = 400,
-    public gap: number = 110
+    public gap: number = 115
   ) {
     this.topPipe = this.newTopPipe();
     this.bottomPipe = this.newBottomPipe();
@@ -56,20 +56,6 @@ export default class Pipes {
       y: this.topPipe.y + this.bottomPipe.length + this.gap,
     };
   }
-
-  // public getTopPipeCenterCoordinates(): Vector {
-  //   return {
-  //     x: this.topPipe.x + this.topPipe.width / 2,
-  //     y: this.topPipe.y + this.topPipe.length,
-  //   };
-  // }
-
-  // public getBottomPipeCenterCoordinates(): Vector {
-  //   return {
-  //     x: this.bottomPipe.x + this.bottomPipe.width / 2,
-  //     y: this.topPipe.y + this.bottomPipe.length + this.gap,
-  //   };
-  // }
 
   private newTopPipe(): SinglePipe {
     const topPipeY: number = 0 - this.topPipeLength;
