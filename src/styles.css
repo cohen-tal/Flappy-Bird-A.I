@@ -303,7 +303,7 @@ p {
   #ai-stats-bottom {
     position: relative;
     grid-template-columns: repeat(1, 1fr);
-    height: 480;
+    height: 480px;
     margin-bottom: 1rem;
   }
 
