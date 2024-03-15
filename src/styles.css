@@ -297,9 +297,8 @@ p {
 
   #ai-stats-bottom {
     position: relative;
-    align-self: center;
     grid-template-columns: repeat(1, 1fr);
-    height: 470px;
+    height: 550px;
   }
 
   #game-container {
