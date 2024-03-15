@@ -294,6 +294,12 @@ p {
     font-size: 24px;
   }
 
+  .flex-container {
+    &.icons-container {
+      gap: 1rem;
+    }
+  }
+
   #ai-stats-bottom {
     position: relative;
     grid-template-columns: repeat(1, 1fr);
