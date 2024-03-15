@@ -14,7 +14,6 @@ body {
   flex-direction: column;
   justify-content: start;
   align-items: center;
-  gap: 1rem;
   background: rgb(78, 192, 202);
   background: linear-gradient(
     180deg,
