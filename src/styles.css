@@ -69,7 +69,7 @@ p {
   justify-content: center;
   width: 430px;
   height: auto;
-  max-height: 500px;
+  max-height: 480px;
   margin-top: 0.1rem;
 }
 
@@ -297,7 +297,7 @@ p {
   #ai-stats-bottom {
     position: relative;
     grid-template-columns: repeat(1, 1fr);
-    height: 500px;
+    height: 480;
     margin-bottom: 1rem;
   }
 
