@@ -9,7 +9,7 @@ The first population generated consists of 500 randomly created birds that start
 
 ![FirstGen](https://github.com/cohen-tal/Flappy-Bird-A.I/assets/157098453/7bc7f142-57c0-450c-a1cc-26a155abdbbe)
 
-This process which imitates nature's "Survival of the Fittest" eventually generates a population of birds that are able to beat the game:
+This process eventually generates a population of birds that are able to beat the game:
 
 ![BestGen](https://github.com/cohen-tal/Flappy-Bird-A.I/assets/157098453/7c5fe6d5-3708-4bef-807d-aa353ff06425)
 
@@ -20,7 +20,8 @@ This process which imitates nature's "Survival of the Fittest" eventually genera
 
 ## How It Works
 ### Brain
-Each bird has it's own Neural-Network instance, also known as the "brain" of the bird. The Neural-Network is in charge of controlling the birds decision.
+Each bird has it's own Neural-Network instance, also known as the "brain" of the bird. The Neural-Network is incharge of controlling the birds decision.
+
 ### Vision
 Each bird can "see" the following:
 1. Vertical Distance to the closest top pipe.
