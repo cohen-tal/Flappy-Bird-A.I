@@ -5,7 +5,7 @@ Enhanced with artificial intelligence (AI) capabilities to enable autonomous gam
 ## Overview
 The game features an AI-controlled bird that learns to navigate through obstacles using a neural network and a genetic algorithm.
 
-The first time a population of 500 randomly created birds start playing the game, once they all die the best bird is chosen and "bred" passing down the best "genes" for the next generation:
+The first population generated consists of 500 randomly created birds that start playing the game, once they all die the best bird is chosen and "bred" passing down the best "genes" for the next generation:
 
 ![FirstGen](https://github.com/cohen-tal/Flappy-Bird-A.I/assets/157098453/7bc7f142-57c0-450c-a1cc-26a155abdbbe)
 
@@ -20,9 +20,9 @@ This process which imitates nature's "Survival of the Fittest" eventually genera
 
 ## How It Works
 ### Brain
-Each bird has it's own Neural-Network instance, also known as the "brain" of the bird. The Neural-Network is in charge of controlling the birds decision wheter it should flap or not.
+Each bird has it's own Neural-Network instance, also known as the "brain" of the bird. The Neural-Network is in charge of controlling the birds decision.
 ### Vision
-Each bird can "see" ("see" = the input to the neural-network) the following:
+Each bird can "see" the following:
 1. Vertical Distance to the closest top pipe.
 2. Vertical Distance to the closest bottom pipe.
 3. Linear Distance to the center passage between the two pipes.
@@ -39,4 +39,3 @@ After passing the input to the Neural-Network, an output is produced, deciding w
 - Webpack for bundling
   
  ***Note: NO frameworks or AI libraries were used in this project*** 
-
